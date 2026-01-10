@@ -4,4 +4,5 @@
 (def options ["-a"])
 (def result (getopt/getopt argv options *file* *ns*))
 
-(println result)
+(println "options:" (result :options))
+(println "arguments:" (result :args))

@@ -21,12 +21,14 @@ When creating CLI commands with phel, we developed a getopt library that provide
 (def options ["-a"])
 (def result (getopt/getopt argv options *file* *ns*))
 
-(println result)
+(println "options:" (result :options))
+(println "arguments:" (result :args))
 ```
 
 ```bash
 $ vendor/bin/phel run src/phel/example.phel
-(smeghead\getopt\getopt\Result [one two] {:a true})
+options: {:a true}
+arguments: [one two]
 ```
 
 
