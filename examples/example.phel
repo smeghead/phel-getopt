@@ -1,7 +1,9 @@
 (ns app\core
   (:require smeghead\getopt\getopt))
 
-(def options ["-a"])
+(def options ["-a" # short option `a` without value.
+              "--output:" # long option `output` with value(required).
+             ])
 (def result (getopt/getopt argv options *file* *ns*))
 
 (println "options:" (result :options))

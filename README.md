@@ -18,7 +18,9 @@ When creating CLI commands with phel, we developed a getopt library that provide
 (ns app\core
   (:require smeghead\getopt\getopt))
 
-(def options ["-a"])
+(def options ["-a" # short option `a` without value.
+              "--output:" # long option `output` with value(required).
+             ])
 (def result (getopt/getopt argv options *file* *ns*))
 
 (println "options:" (result :options))
@@ -26,8 +28,8 @@ When creating CLI commands with phel, we developed a getopt library that provide
 ```
 
 ```bash
-$ vendor/bin/phel run src/phel/example.phel -a one two
-options: {:a true}
+$ vendor/bin/phel run examples/example.phel -a --output ./output.txt one two
+options: {:a true, :output ./output.txt}
 arguments: [one two]
 ```
 
