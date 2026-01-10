@@ -26,7 +26,7 @@ When creating CLI commands with phel, we developed a getopt library that provide
 ```
 
 ```bash
-$ vendor/bin/phel run src/phel/example.phel
+$ vendor/bin/phel run src/phel/example.phel -a one two
 options: {:a true}
 arguments: [one two]
 ```
