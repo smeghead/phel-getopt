@@ -1,7 +1,7 @@
 # phel-getopt
 parse CLI arguments and options.
 
-![Testing](https://github.com/smeghead/phel-grep/actions/workflows/ci.yml/badge.svg?event=push)
+![Testing](https://github.com/smeghead/phel-getopt/actions/workflows/ci.yml/badge.svg?event=push)
 
 Programs that function as phel CLI commands execute as compiled PHP code at runtime, presenting unique challenges for handling command-line arguments.
 Additionally, there are multiple ways to execute phel scripts (`phel run <scriptname>`, `phel run <namespace>`).
