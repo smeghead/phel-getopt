@@ -1,0 +1,75 @@
+(ns tests\smeghead\getopt\getopt-test
+  (:require smeghead\getopt\getopt)
+  (:require phel\test :refer [deftest is]))
+
+(deftest phel-index-as-script
+  (let [result (getopt/phel-index ["vendor/bin/phel" "run" "src/main.phel"] "main.phel" "grep\main")]
+    (is (= result 2))))
+
+(deftest phel-index-as-namespace
+  (let [result (getopt/phel-index ["vendor/bin/phel" "run" "grep\main"] "main.phel" "grep\main")]
+    (is (= result 2))))
+
+(deftest phel-index-as-php-compiled
+  (let [result (getopt/phel-index ["php" "out/main.php"] "main.phel" "grep\main")]
+    (is (= result 1))))
+
+(deftest run-as-script-no-argv
+  (let [options []
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) []))
+    (is (= (result :options) {}))))
+
+(deftest run-as-namespace-no-argv
+  (let [options []
+        result (getopt/getopt ["vendor/bin/phel" "run" "grep\main"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) []))
+    (is (= (result :options) {}))))
+
+(deftest run-as-php-no-argv
+  (let [options []
+        result (getopt/getopt ["out/main.php"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) []))
+    (is (= (result :options) {}))))
+
+(deftest run-as-script-2-arguments
+  (let [options []
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {}))))
+
+(deftest run-as-namespace-2-arguments
+  (let [options []
+        result (getopt/getopt ["vendor/bin/phel" "run" "grep\main" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {}))))
+
+(deftest option-short-options
+  (let [options ["-a"]
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel" "-a" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:a true}))))
+
+(deftest option-short-options-require-value
+  (let [options ["-a:"]
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel" "-a" "param" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:a "param"}))))
+
+(deftest option-long-options
+  (let [options ["--amazing"]
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel" "--amazing" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:amazing true}))))
+
+(deftest option-unknown-options
+  (let [options ["-a"]
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel" "--unknown" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {}))))
+
+(deftest option-give-up-parse-after---
+  (let [options ["-a"]
+        result (getopt/getopt ["vendor/bin/phel" "run" "src/main.phel" "--" "-a" "one" "two"] options "/app/src/main.phel" "grep\main")]
+    (is (= (result :args) ["-a" "one" "two"]))
+    (is (= (result :options) {}))))

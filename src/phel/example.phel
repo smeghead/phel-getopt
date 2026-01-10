@@ -1,0 +1,7 @@
+(ns app\core
+  (:require smeghead\getopt\getopt))
+
+(def options ["-a"])
+(def result (getopt/getopt argv options *file* *ns*))
+
+(println result)

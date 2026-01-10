@@ -1,0 +1,20 @@
+{
+    "name": "smeghead/phel-getopt",
+    "description": "parse CLI arguments and options.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Smeghead\\PhelGetopt\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "smeghead",
+            "email": "smeghead7@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phel-lang/phel-lang": "dev-main"
+    }
+}

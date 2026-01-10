@@ -1,0 +1,48 @@
+(ns smeghead\getopt\getopt
+  (:require phel\str))
+
+(defstruct Result [args options])
+
+(defn phel-index [args entrypoint-basename ns]
+  (let [run-index (find-index |(= $ "run") args)
+        script-index (find-index |(str/contains? $ entrypoint-basename) args)
+        namespace-index (find-index |(= $ ns) args)
+        php-index (find-index |(str/contains? $ ".php") args)]
+    (cond
+      (and (not (nil? run-index)) (not (nil? script-index))) script-index
+      (and (not (nil? run-index)) (not (nil? namespace-index))) namespace-index
+      (not (nil? php-index)) php-index
+      nil)))
+
+(defn- gen-result [phel-args options]
+  (loop [rest-args phel-args
+         args []
+         opts {}]
+    (if (empty? rest-args)
+      (Result args opts)   
+      (let [current-arg (first rest-args)
+            no-value-option (contains-value? options current-arg)
+            value-option (contains-value? options (str current-arg ":"))
+            current-arg-keyword (keyword (str/replace current-arg "/[-:]/" ""))]
+        (cond
+          (= current-arg "--") (recur
+                                 []
+                                 (concat args (rest rest-args))
+                                 opts)
+          no-value-option (recur
+                            (rest rest-args)
+                            args
+                            (assoc opts current-arg-keyword true))
+          value-option (recur
+                         (rest (rest rest-args))
+                         args
+                         (assoc opts current-arg-keyword (second rest-args)))
+          (if (str/starts-with? current-arg "-")
+            (recur (rest rest-args) args opts) # - から始まっていた場合は current-arg を捨てる。
+            (recur (rest rest-args) (conj args current-arg) opts)))))))
+
+(defn getopt [args options entrypoint ns]
+  (let [entrypoint-basename (php/basename entrypoint)
+        phel-index (phel-index args entrypoint-basename ns)
+        phel-args (if (nil? phel-index) [] (slice args (inc phel-index)))]
+    (gen-result phel-args options)))
