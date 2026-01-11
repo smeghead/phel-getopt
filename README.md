@@ -42,6 +42,6 @@ arguments: [one two]
 
 ```bash
 composer init
-composer require phel-lang/phel-lang:dev-main --dev
+composer require phel-lang/phel-lang:dev-main
 vendor/bin/phel init
 ```
