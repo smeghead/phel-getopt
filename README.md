@@ -12,22 +12,6 @@ traditional PHP CLI scripts.
 phel-getopt embraces this reality and provides a dedicated solution
 tailored to phel's execution model.
 
-
-## Motivation
-
-phel programs are compiled to PHP and executed in a PHP runtime environment.
-As a result, phel CLI programs inherit PHP's global `$argv` directly.
-
-However, unlike typical PHP CLI scripts, phel programs are often executed
-*through the phel CLI launcher*, which introduces unique challenges when
-parsing command-line arguments.
-
-Because of this execution model, using PHP's built-in `getopt()` does **not**
-work reliably for phel CLI tools.
-
-This library exists to solve that problem.
-
-
 ## The Problem
 
 The contents of `phel/argv` depend on **how the phel program is executed**.
