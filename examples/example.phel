@@ -1,3 +1,4 @@
+#! vendor/bin/phel run
 (ns app\core
   (:require smeghead\getopt\getopt))
 
@@ -6,5 +7,6 @@
              ])
 (def result (getopt/getopt argv options *file* *ns*))
 
+(println "argv:" argv)
 (println "options:" (result :options))
 (println "arguments:" (result :args))
