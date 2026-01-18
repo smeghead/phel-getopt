@@ -126,8 +126,10 @@ composer require smeghead/phel-getopt
 (def options ["-a" # short option `a` without value.
               "--output:" # long option `output` with value(required).
              ])
-(def result (getopt/getopt argv options *file* *ns*))
+(def result (getopt/getopt argv options))
 
+(println "*program*:" *program*)
+(println "argv:" argv)
 (println "options:" (result :options))
 (println "arguments:" (result :args))
 ```
