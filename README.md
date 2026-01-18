@@ -4,104 +4,103 @@ Natural and safe command-line argument parsing for phel CLI programs.
 
 ![Testing](https://github.com/smeghead/phel-getopt/actions/workflows/ci.yml/badge.svg?event=push) [![Latest Stable Version](https://img.shields.io/packagist/v/smeghead/phel-getopt.svg)](https://packagist.org/packages/smeghead/phel-getopt) [![Total Downloads](https://img.shields.io/packagist/dt/smeghead/phel-getopt.svg)](https://packagist.org/packages/smeghead/phel-getopt) [![License](https://img.shields.io/packagist/l/smeghead/phel-getopt.svg)](LICENSE)
 
+# phel-getopt
+
+A small and focused command-line option and argument parser for phel.
+
+## Overview
+
+`phel-getopt` is a library for parsing command-line options and arguments
+in phel CLI programs.
+
+Next versions(v0.28.0?) of phel normalize `argv` so that the same arguments are
+available regardless of how a program is executed (file, namespace, or
+compiled PHP).
+
+With this improvement in phel itself, `phel-getopt` focuses solely on
+providing **clear, predictable, and phel-friendly command-line parsing**.
+
+
+## Why phel-getopt?
+
+Even with normalized `argv`, parsing command-line options remains a
+non-trivial task.
+
+PHP’s built-in `getopt()` has several characteristics that make it
+awkward to use from phel:
+
+- It enforces PHP-specific conventions
+- It has unintuitive behavior for long options
+- It is tightly coupled to PHP’s global state
+- It does not feel natural in a Lisp-style language
+
+`phel-getopt` exists to offer a simpler and more explicit alternative
+designed for phel programs.
+
+
+## What This Library Does
+
+`phel-getopt` provides:
+
+- Parsing of short and long options
+- Separation of options and positional arguments
+- A clear and explicit data structure as the result
+- Behavior suitable for CLI tools written in phel
+
+It does **not** attempt to handle execution-method differences or `argv`
+normalization — those concerns are handled by phel itself.
+
+
+## Design Goals
+
+- Simple and explicit parsing rules
+- No reliance on global state
+- Predictable behavior
+- Easy to reason about in phel code
+- Small surface area and minimal magic
+
+The goal is not to replicate every feature of GNU `getopt`, but to provide
+a practical and understandable tool for everyday phel CLI programs.
+
+
+## When to Use phel-getopt
+
+Use this library if you are:
+
+- Writing CLI tools in phel
+- Looking for an alternative to PHP’s `getopt()`
+- Wanting explicit control over options and arguments
+- Preferring a small, focused dependency
+
+
+## When Not to Use It
+
+You may not need `phel-getopt` if:
+
+- Your program accepts no command-line options
+- You are comfortable using PHP’s `getopt()` directly
+- You need full GNU getopt compatibility
+
+
+## Background
+
+Earlier versions of this library also addressed differences in `argv`
+caused by various phel execution methods.
+
+As of recent phel releases, `argv` is normalized by phel itself.
+This library has since narrowed its scope to option and argument parsing only.
+
+
 ## Summary
 
-Parsing command-line arguments in phel is fundamentally different from
-traditional PHP CLI scripts.
+`phel-getopt` is a lightweight command-line parsing library for phel.
 
-phel-getopt embraces this reality and provides a dedicated solution
-tailored to phel's execution model.
-
-## The Problem
-
-The contents of `phel/argv` depend on **how the phel program is executed**.
-
-### 1. Executing a phel script file
-
-```bash
-vendor/bin/phel run src/main.phel -a one two
-```
-
-`phel/argv` becomes:
-
-```clojure
-["vendor/bin/phel" "run" "src/main.phel" "-a" "one" "two"]
-```
-User-defined arguments start at index 3.
-
-### 2. Executing a phel namespace
-
-```bash
-vendor/bin/phel run app\\main -a one two
-```
-
-`phel/argv` becomes:
-
-```clojure
-["vendor/bin/phel" "run" "app\\main" "-a" "one" "two"]
-```
-
-The structure is similar, but whether the third argument is a file path or
-a namespace cannot be reliably determined at runtime.
-
-### 3. Executing compiled PHP directly
-
-```bash
-php ./out/main.php -a one two
-```
+It assumes a normalized `argv` and focuses on doing one thing well:
+turning command-line arguments into a clear and usable structure for
+phel CLI programs.
 
 
-`phel/argv` becomes:
 
-```clojure
-["./out/main.php" "-a" "one" "two"]
-```
-
-User-defined arguments start at index 1.
-
-
-## Why PHP's getopt() Is Not Suitable
-
-PHP's `getopt()` assumes that:
-
-* `$argv[0]` is the current script
-
-* All following arguments belong to the script itself
-
-This assumption breaks down in phel, because:
-
-* The phel CLI launcher (`vendor/bin/phel`) consumes part of the argument list
-
-* The number of launcher arguments varies depending on execution style
-
-* There is no safe, universal index at which user arguments begin
-
-As a result, directly calling PHP's getopt() leads to fragile and error-prone
-CLI tools.
-
-## What phel-getopt Provides
-
-phel-getopt abstracts away these differences and provides:
-
-* Safe detection of user-defined command-line arguments
-
-* Execution-method-independent argument parsing
-
-* A natural and predictable CLI experience for phel programs
-
-With phel-getopt, phel CLI tools can be written as if they were invoked
-directly, regardless of how they are actually executed.
-
-## Design Philosophy
-
-* Do not rely on fixed argv indices
-
-* Do not depend on execution style (file, namespace, or compiled PHP)
-
-* Make phel CLI tools portable and robust
-
-This library exists because phel is a compiled-to-PHP language with multiple
-execution paths — and CLI tools should not have to care about that.
 
 
 
