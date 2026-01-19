@@ -13,7 +13,7 @@ A small and focused command-line option and argument parser for phel.
 `phel-getopt` is a library for parsing command-line options and arguments
 in phel CLI programs.
 
-Next versions(v0.28.0?) of phel normalize `argv` so that the same arguments are
+Latest version(v0.28.0) of phel normalize `argv` so that the same arguments are
 available regardless of how a program is executed (file, namespace, or
 compiled PHP).
 
@@ -136,6 +136,8 @@ composer require smeghead/phel-getopt
 
 ```bash
 $ vendor/bin/phel run examples/example.phel -a --output ./output.txt one two
+*program*: src/phel/main.phel
+argv: [-a one two]
 options: {:a true, :output ./output.txt}
 arguments: [one two]
 ```

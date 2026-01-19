@@ -15,6 +15,11 @@
         }
     ],
     "require": {
-        "phel-lang/phel-lang": "dev-main"
+        "phel-lang/phel-lang": ">=0.28 <1.0"
+    },
+    "scripts": {
+        "test": [
+            "vendor/bin/phel test"
+        ]
     }
 }
