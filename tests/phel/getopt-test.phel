@@ -35,6 +35,7 @@
 (deftest option-unknown-options
   (let [options ["-a"]
         result (getopt/getopt ["--unknown" "one" "two"] options)]
+    (is (= (result :errors) ["Unknown option: \"--unknown\""]))
     (is (= (result :args) ["one" "two"]))
     (is (= (result :options) {}))))
 

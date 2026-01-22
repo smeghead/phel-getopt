@@ -1,14 +1,15 @@
 (ns smeghead\getopt\getopt
   (:require phel\str))
 
-(defstruct Result [args options])
+(defstruct Result [args options errors])
 
 (defn- gen-result [args options]
   (loop [rest-args args
          arguments []
-         opts {}]
+         opts {}
+         errors []]
     (if (empty? rest-args)
-      (Result arguments opts)   
+      (Result arguments opts errors)
       (let [current-arg (first rest-args)
             no-value-option (contains-value? options current-arg)
             value-option (contains-value? options (str current-arg ":"))
@@ -17,18 +18,21 @@
           (= current-arg "--") (recur
                                  []
                                  (concat arguments (rest rest-args))
-                                 opts)
+                                 opts
+                                 errors)
           no-value-option (recur
                             (rest rest-args)
                             arguments
-                            (assoc opts current-arg-keyword true))
+                            (assoc opts current-arg-keyword true)
+                            errors)
           value-option (recur
                          (rest (rest rest-args))
                          arguments
-                         (assoc opts current-arg-keyword (second rest-args)))
+                         (assoc opts current-arg-keyword (second rest-args))
+                         errors)
           (if (str/starts-with? current-arg "-")
-            (recur (rest rest-args) arguments opts) # - から始まっていた場合は current-arg を捨てる。
-            (recur (rest rest-args) (conj arguments current-arg) opts)))))))
+            (recur (rest rest-args) arguments opts (conj errors (format "Unknown option: \"%s\"" current-arg)))
+            (recur (rest rest-args) (conj arguments current-arg) opts errors)))))))
 
 (defn getopt [args options]
   (gen-result args options))
