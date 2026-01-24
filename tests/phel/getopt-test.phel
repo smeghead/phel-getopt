@@ -26,6 +26,20 @@
     (is (= (result :args) ["one" "two"]))
     (is (= (result :options) {:a "param"}))))
 
+(deftest option-short-options-require-value-missing
+  (let [options ["-a:" "-b"]
+        result (getopt/getopt ["-a" "-b" "one" "two"] options)]
+    (is (= (result :errors) ["Missing value option: \"-a\""]))
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:b true}))))
+
+(deftest option-short-options-require-value-missing-last-position
+  (let [options ["-a:"]
+        result (getopt/getopt ["one" "two" "-a"] options)]
+    (is (= (result :errors) ["Missing value option: \"-a\""]))
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {}))))
+
 (deftest option-long-options
   (let [options ["--amazing"]
         result (getopt/getopt ["--amazing" "one" "two"] options)]

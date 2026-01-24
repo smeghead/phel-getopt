@@ -25,6 +25,18 @@
                             arguments
                             (assoc opts current-arg-keyword true)
                             errors)
+          (and value-option (empty? (rest rest-args)))
+                       (recur
+                         (rest rest-args)
+                         arguments
+                         opts
+                         (conj errors (format "Missing value option: \"%s\"" current-arg)))
+          (and value-option (str/starts-with? (first (rest rest-args)) "-"))
+                       (recur
+                         (rest rest-args)
+                         arguments
+                         opts
+                         (conj errors (format "Missing value option: \"%s\"" current-arg)))
           value-option (recur
                          (rest (rest rest-args))
                          arguments
