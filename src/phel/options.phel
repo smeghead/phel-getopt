@@ -18,6 +18,8 @@
 
 (defn find-option [options name]
   (let [matches (php/array)
-        _ (php/preg_match "/--?(\w+)=?(\w*)?/" name matches)
+        _ (php/preg_match "/--?(\w+)=?(\w*)/" name matches)
         matches (php->phel matches)]
-  (find |(= ($ :name) (matches 1)) options)))
+    (if (empty? matches)
+      nil 
+      (find |(= ($ :name) (matches 1)) options))))

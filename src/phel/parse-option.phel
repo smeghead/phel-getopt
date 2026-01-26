@@ -12,5 +12,6 @@
     (let [option-defined (options/find-option options arg)]
       (cond 
         (= option-defined nil) (Error (format "Unknown option: \"%s\"" arg))
-        (= (option-defined :type) :short) (Option (option-defined :name) true 0)
+        (option-defined :required) (Option (option-defined :name) true 1)
+        (not (option-defined :required)) (Option (option-defined :name) true 0)
 ))))

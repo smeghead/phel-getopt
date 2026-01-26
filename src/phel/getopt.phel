@@ -1,10 +1,11 @@
 (ns smeghead\getopt\getopt
+  (:require smeghead\getopt\options)
+  (:require smeghead\getopt\parse-option)
   (:require phel\str))
 
 (defstruct Result [args options errors])
 
-
-(defn- gen-result [args options]
+(defn- gen-result [args options-defined]
   (loop [rest-args args
          arguments []
          opts {}
@@ -12,8 +13,8 @@
     (if (empty? rest-args)
       (Result arguments opts errors)
       (let [current-arg (first rest-args)
-            no-value-option (contains-value? options current-arg)
-            value-option (contains-value? options (str current-arg ":"))
+            current-option-defined (options/find-option options-defined current-arg)
+            parsed (parse-option/parse current-arg options-defined)
             current-arg-keyword (keyword (str/replace current-arg "/[-:]/" ""))]
         (cond
           (= current-arg "--") (recur
@@ -21,31 +22,45 @@
                                  (concat arguments (rest rest-args))
                                  opts
                                  errors)
-          no-value-option (recur
-                            (rest rest-args)
-                            arguments
-                            (assoc opts current-arg-keyword true)
-                            errors)
-          (and value-option (empty? (rest rest-args)))
+          (parse-option/Error? parsed)
                        (recur
                          (rest rest-args)
                          arguments
                          opts
-                         (conj errors (format "Missing value option: \"%s\"" current-arg)))
-          (and value-option (str/starts-with? (first (rest rest-args)) "-"))
+                         (conj errors (parsed :message)))
+          (parse-option/Argument? parsed)
+                       (recur (rest rest-args) (conj arguments current-arg) opts errors)
+          (not (current-option-defined :required))
                        (recur
                          (rest rest-args)
                          arguments
-                         opts
-                         (conj errors (format "Missing value option: \"%s\"" current-arg)))
-          value-option (recur
-                         (rest (rest rest-args))
-                         arguments
-                         (assoc opts current-arg-keyword (second rest-args))
+                         (assoc opts current-arg-keyword true)
                          errors)
-          (if (str/starts-with? current-arg "-")
-            (recur (rest rest-args) arguments opts (conj errors (format "Unknown option: \"%s\"" current-arg)))
-            (recur (rest rest-args) (conj arguments current-arg) opts errors)))))))
+          (current-option-defined :required)
+                       (if (< (count rest-args) 2)
+                         (recur
+                           (rest rest-args)
+                           arguments
+                           opts
+                           (conj errors (format "Missing value option: \"%s\"" current-arg)))
+                         (if (= (parsed :consumed-options) 1)
+                           (let [next-arg (second rest-args)]
+                             (if (str/starts-with? next-arg "-")
+                              (recur
+                                (rest rest-args)
+                                arguments
+                                opts
+                                (conj errors (format "Missing value option: \"%s\"" current-arg)))
+                              (recur
+                               (rest (rest rest-args))
+                               arguments
+                               (assoc opts current-arg-keyword (second rest-args))
+                               errors)))
+                           (recur
+                             (rest (rest rest-args))
+                             arguments
+                             (assoc opts current-arg-keyword (second rest-args))
+                             errors))))))))
 
 (defn getopt [args options]
-  (gen-result args options))
+  (gen-result args (options/create options)))
