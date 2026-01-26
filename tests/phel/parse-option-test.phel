@@ -1,0 +1,25 @@
+(ns tests\smeghead\getopt\parse-option-test
+  (:require smeghead\getopt\options)
+  (:require smeghead\getopt\parse-option)
+  (:require phel\test :refer [deftest is]))
+
+(deftest one-arg
+  (let [options-defined (options/create [])
+        result (parse-option/parse "one" options-defined)]
+    (is (parse-option/Argument? result))
+    (is (= (result :value) "one"))))
+
+(deftest one-short-option
+  (let [options-defined (options/create ["-a"])
+        result (parse-option/parse "-a" options-defined)]
+    (is (parse-option/Option? result))
+    (is (= (result :name) "a"))
+    (is (= (result :value) true))
+    (is (= (result :consumed-options) 0))))
+
+(deftest one-short-option-unknown
+  (let [options-defined (options/create ["-a"])
+        result (parse-option/parse "-x" options-defined)]
+    (is (parse-option/Error? result))
+    (is (= (result :message) "Unknown option: \"-x\""))))
+

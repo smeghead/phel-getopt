@@ -3,6 +3,7 @@
 
 (defstruct Result [args options errors])
 
+
 (defn- gen-result [args options]
   (loop [rest-args args
          arguments []

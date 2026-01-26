@@ -26,6 +26,12 @@
     (is (= (result :args) ["one" "two"]))
     (is (= (result :options) {:a "param"}))))
 
+#(deftest option-short-options-require-value-combined
+#  (let [options ["-a:"]
+#        result (getopt/getopt ["-aparam" "one" "two"] options)]
+#    (is (= (result :args) ["one" "two"]))
+#    (is (= (result :options) {:a "param"}))))
+
 (deftest option-short-options-require-value-missing
   (let [options ["-a:" "-b"]
         result (getopt/getopt ["-a" "-b" "one" "two"] options)]
@@ -45,6 +51,12 @@
         result (getopt/getopt ["--amazing" "one" "two"] options)]
     (is (= (result :args) ["one" "two"]))
     (is (= (result :options) {:amazing true}))))
+
+#(deftest option-long-options-require-value-combined
+#  (let [options ["--amazing:"]
+#        result (getopt/getopt ["--amazing=man" "one" "two"] options)]
+#    (is (= (result :args) ["one" "two"]))
+#    (is (= (result :options) {:amazing "man"}))))
 
 (deftest option-unknown-options
   (let [options ["-a"]

@@ -1,0 +1,31 @@
+(ns tests\smeghead\getopt\options-test
+  (:require smeghead\getopt\options)
+  (:require phel\test :refer [deftest is]))
+
+(deftest options-short-a
+  (let [options-defined (options/get-options-defined/create ["-a"])
+        op (options/find-option options-defined "-a")]
+    (is (= (op :name) "a"))
+    (is (= (op :type) :short))
+    (is (= (op :required) false))))
+
+(deftest options-short-a-required
+  (let [options-defined (options/get-options-defined/create ["-a:"])
+        op (options/find-option options-defined "-a")]
+    (is (= (op :name) "a"))
+    (is (= (op :type) :short))
+    (is (= (op :required) true))))
+
+(deftest options-long-aaa
+  (let [options-defined (options/get-options-defined/create ["--aaa"])
+        op (options/find-option options-defined "--aaa")]
+    (is (= (op :name) "aaa"))
+    (is (= (op :type) :long))
+    (is (= (op :required) false))))
+
+(deftest options-long-aaa-required
+  (let [options-defined (options/get-options-defined/create ["--aaa:"])
+        op (options/find-option options-defined "--aaa")]
+    (is (= (op :name) "aaa"))
+    (is (= (op :type) :long))
+    (is (= (op :required) true))))

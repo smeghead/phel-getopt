@@ -1,0 +1,16 @@
+(ns smeghead\getopt\parse-option
+  (:require phel\str)
+  (:require smeghead\getopt\options))
+
+(defstruct Option [name value consumed-options])
+(defstruct Error [message])
+(defstruct Argument [value])
+
+(defn parse [arg options]
+  (if (not (str/starts-with? arg "-"))
+    (Argument arg)
+    (let [option-defined (options/find-option options arg)]
+      (cond 
+        (= option-defined nil) (Error (format "Unknown option: \"%s\"" arg))
+        (= (option-defined :type) :short) (Option (option-defined :name) true 0)
+))))
