@@ -1,0 +1,26 @@
+(ns tests\smeghead\getopt\argument-test
+  (:require smeghead\getopt\argument)
+  (:require phel\test :refer [deftest is]))
+
+(deftest arg
+  (let [result (argument/parse "one")]
+    (is (argument/Value? result))
+    (is (= (result :value) "one"))))
+
+(deftest key-value-short
+  (let [result (argument/parse "-a")]
+    (is (argument/KeyValue? result))
+    (is (= (result :key) "a"))
+    (is (= (result :value) ""))))
+
+(deftest key-value-short-contains-value
+  (let [result (argument/parse "-astar")]
+    (is (argument/KeyValue? result))
+    (is (= (result :key) "a"))
+    (is (= (result :value) "star"))))
+
+(deftest key-value-long-contains-value
+  (let [result (argument/parse "--amazing=star")]
+    (is (argument/KeyValue? result))
+    (is (= (result :key) "amazing"))
+    (is (= (result :value) "star"))))

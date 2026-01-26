@@ -52,11 +52,11 @@
     (is (= (result :args) ["one" "two"]))
     (is (= (result :options) {:amazing true}))))
 
-#(deftest option-long-options-require-value-combined
-#  (let [options ["--amazing:"]
-#        result (getopt/getopt ["--amazing=man" "one" "two"] options)]
-#    (is (= (result :args) ["one" "two"]))
-#    (is (= (result :options) {:amazing "man"}))))
+(deftest option-long-options-require-value-combined
+  (let [options ["--amazing:"]
+        result (getopt/getopt ["--amazing=man" "one" "two"] options)]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:amazing "man"}))))
 
 (deftest option-unknown-options
   (let [options ["-a"]

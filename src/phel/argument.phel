@@ -1,0 +1,16 @@
+(ns smeghead\getopt\argument
+  (:require phel\str))
+
+(defstruct Value [value])
+(defstruct KeyValue [key value])
+
+(defn parse [arg]
+  (if (not (str/starts-with? arg "-"))
+    (Value arg)
+    (if (= arg "--")
+      (Value arg)
+      (let [is-long (str/starts-with? arg "--")
+            matches (php/array)
+            _ (php/preg_match (if is-long "/--(\w+)=?(\w*)/" "/-(\w)(\w*)/") arg matches)
+            matches (php->phel matches)]
+        (KeyValue (matches 1) (matches 2))))))
