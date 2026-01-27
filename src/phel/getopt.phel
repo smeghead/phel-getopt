@@ -17,25 +17,26 @@
             parsed (parse-argument/parse current-arg options-defined)
             current-arg-keyword (keyword (str/replace current-arg "/[-:]/" ""))]
         (cond
-          (= current-arg "--") (recur
-                                 []
-                                 (concat arguments (rest rest-args))
-                                 opts
-                                 errors)
+          (parse-argument/Stop? parsed)
+            (recur
+              []
+              (concat arguments (rest rest-args))
+              opts
+              errors)
           (parse-argument/Error? parsed)
-                       (recur
-                         (rest rest-args)
-                         arguments
-                         opts
-                         (conj errors (parsed :message)))
+            (recur
+              (rest rest-args)
+              arguments
+              opts
+              (conj errors (parsed :message)))
           (parse-argument/Argument? parsed)
-                       (recur (rest rest-args) (conj arguments current-arg) opts errors)
+            (recur (rest rest-args) (conj arguments current-arg) opts errors)
           (not (current-option-defined :required))
-                       (recur
-                         (rest rest-args)
-                         arguments
-                         (assoc opts current-arg-keyword true)
-                         errors)
+            (recur
+              (rest rest-args)
+              arguments
+              (assoc opts current-arg-keyword true)
+              errors)
           (current-option-defined :required)
             (let [value-empty (nil? (parsed :value))]
               (if (and value-empty (< (count rest-args) 2))

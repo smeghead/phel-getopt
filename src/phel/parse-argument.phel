@@ -4,6 +4,7 @@
   (:require smeghead\getopt\argument))
 
 (defstruct Option [name value consumed-options])
+(defstruct Stop [])
 (defstruct Error [message])
 (defstruct Argument [value])
 
@@ -11,11 +12,12 @@
   (let [parsed-arg (argument/parse arg)]
   (if (argument/Value? parsed-arg)
     (Argument arg)
-    (let [option-defined (options/find-option options arg)]
-      (cond 
-        (= option-defined nil) (Error (format "Unknown option: \"%s\"" arg))
-        (option-defined :required) (if (empty? (parsed-arg :value))
-                                     (Option (option-defined :name) nil true)
-                                     (Option (option-defined :name) (parsed-arg :value) false))
-        (not (option-defined :required)) (Option (option-defined :name) true false)
-)))))
+    (if (argument/StopParse? parsed-arg)
+      (Stop)
+      (let [option-defined (options/find-option options arg)]
+        (cond 
+          (= option-defined nil) (Error (format "Unknown option: \"%s\"" arg))
+          (option-defined :required) (if (empty? (parsed-arg :value))
+                                       (Option (option-defined :name) nil true)
+                                       (Option (option-defined :name) (parsed-arg :value) false))
+          (not (option-defined :required)) (Option (option-defined :name) true false)))))))

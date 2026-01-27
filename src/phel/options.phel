@@ -1,5 +1,6 @@
 (ns smeghead\getopt\options
-  (:require phel\str))
+  (:require phel\str)
+  (:require smeghead\getopt\argument))
 
 (defstruct OptionDefined [type name required])
 
@@ -17,9 +18,7 @@
         (recur (rest rest-options) (conj acc (OptionDefined type name required)))))))
 
 (defn find-option [options name]
-  (let [matches (php/array)
-        _ (php/preg_match "/--?(\w+)=?(\w*)/" name matches)
-        matches (php->phel matches)]
-    (if (empty? matches)
+  (let [arg (argument/parse name)]
+    (if (not (argument/KeyValue? arg))
       nil 
-      (find |(= ($ :name) (matches 1)) options))))
+      (find |(= ($ :name) (arg :key)) options))))

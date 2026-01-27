@@ -7,6 +7,10 @@
     (is (argument/Value? result))
     (is (= (result :value) "one"))))
 
+(deftest stop-parse
+  (let [result (argument/parse "--")]
+    (is (argument/StopParse? result))))
+
 (deftest key-value-short
   (let [result (argument/parse "-a")]
     (is (argument/KeyValue? result))
