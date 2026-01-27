@@ -5,16 +5,6 @@
 (defstruct StopParse [])
 (defstruct KeyValue [key value])
 
-(defn- strip-quote [s q]
-  (if (and (str/starts-with? s q)
-           (str/ends-with? s q))
-    (str/subs s 1 (- (php/mb_strlen s) 1))))
-
-(defn- trim-quote [s]
-  (or (strip-quote s "\"")
-      (strip-quote s "'")
-      s))
-
 (defn parse [arg]
   (if (not (str/starts-with? arg "-"))
     (Value arg)
@@ -22,6 +12,6 @@
       (StopParse)
       (let [is-long (str/starts-with? arg "--")
             matches (php/array)
-            _ (php/preg_match (if is-long "/--(\w+)=?(.*)/" "/-(\w)(\w*)/") arg matches)
+            _ (php/preg_match (if is-long "/--([-\w]+)=?(.*)/" "/-(\w)(\w*)/") arg matches)
             matches (php->phel matches)]
-        (KeyValue (matches 1) (trim-quote (matches 2)))))))
+        (KeyValue (matches 1) (matches 2))))))

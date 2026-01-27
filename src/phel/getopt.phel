@@ -14,8 +14,7 @@
       (Result arguments opts errors)
       (let [current-arg (first rest-args)
             current-option-defined (options/find-option options-defined current-arg)
-            parsed (parse-argument/parse current-arg options-defined)
-            current-arg-keyword (keyword (str/replace current-arg "/[-:]/" ""))]
+            parsed (parse-argument/parse current-arg options-defined)]
         (cond
           (parse-argument/Stop? parsed)
             (recur
@@ -35,7 +34,7 @@
             (recur
               (rest rest-args)
               arguments
-              (assoc opts current-arg-keyword true)
+              (assoc opts (keyword (parsed :name)) (parsed :value))
               errors)
           (current-option-defined :required)
             (let [value-empty (nil? (parsed :value))]
@@ -56,13 +55,13 @@
                      (recur
                       (rest (rest rest-args))
                       arguments
-                      (assoc opts current-arg-keyword (second rest-args))
+                      (assoc opts (keyword (parsed :name)) (second rest-args))
                       errors)))
                   (if value-empty
                     (recur
                       (rest (rest rest-args))
                       arguments
-                      (assoc opts current-arg-keyword (second rest-args))
+                      (assoc opts (keyword (parsed :name)) (second rest-args))
                       errors)
                     (recur
                       (rest rest-args)

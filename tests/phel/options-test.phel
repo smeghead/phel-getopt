@@ -23,6 +23,13 @@
     (is (= (op :type) :long))
     (is (= (op :required) false))))
 
+(deftest options-long-aaa-includes--
+  (let [options-defined (options/get-options-defined/create ["--aaa-bb"])
+        op (options/find-option options-defined "--aaa-bb")]
+    (is (= (op :name) "aaa-bb"))
+    (is (= (op :type) :long))
+    (is (= (op :required) false))))
+
 (deftest options-long-aaa-required
   (let [options-defined (options/get-options-defined/create ["--aaa:"])
         op (options/find-option options-defined "--aaa")]

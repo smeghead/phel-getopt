@@ -13,7 +13,7 @@
             type (cond
                    (str/starts-with? option "--") :long
                    (str/starts-with? option "-") :short)
-            name (str/replace option "/[:-]/" "")
+            name (str/replace (str/replace option "/^--?/" "") "/:$/" "")
             required (str/contains? option ":")]
         (recur (rest rest-options) (conj acc (OptionDefined type name required)))))))
 
