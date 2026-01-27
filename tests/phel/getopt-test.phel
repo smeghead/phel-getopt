@@ -58,6 +58,18 @@
     (is (= (result :args) ["one" "two"]))
     (is (= (result :options) {:amazing "man"}))))
 
+(deftest option-long-options-require-value-combined-quote
+  (let [options ["--amazing:"]
+        result (getopt/getopt ["--amazing='man'" "one" "two"] options)]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:amazing "man"}))))
+
+(deftest option-long-options-require-value-combined-double-quote
+  (let [options ["--amazing:"]
+        result (getopt/getopt ["--amazing=\"man\"" "one" "two"] options)]
+    (is (= (result :args) ["one" "two"]))
+    (is (= (result :options) {:amazing "man"}))))
+
 (deftest option-unknown-options
   (let [options ["-a"]
         result (getopt/getopt ["--unknown" "one" "two"] options)]
