@@ -68,7 +68,7 @@ The `getopt` function returns a `Result` struct with three fields:
 (def options [])
 (def result (getopt/getopt ["one" "two"] options))
 ;; result: {:args ["one" "two"], :options {}, :errors []}
-``` [4](#1-3) 
+```
 
 #### Short Options with Values
 
@@ -76,7 +76,7 @@ The `getopt` function returns a `Result` struct with three fields:
 (def options ["-a:"])
 (def result (getopt/getopt ["-a" "param" "one" "two"] options))
 ;; result: {:args ["one" "two"], :options {:a "param"}, :errors []}
-``` [5](#1-4) 
+```
 
 #### Combined Short Options
 
@@ -84,7 +84,7 @@ The `getopt` function returns a `Result` struct with three fields:
 (def options ["-a:"])
 (def result (getopt/getopt ["-aparam" "one" "two"] options))
 ;; result: {:args ["one" "two"], :options {:a "param"}, :errors []}
-``` [6](#1-5) 
+```
 
 #### Long Options with Values
 
@@ -92,7 +92,7 @@ The `getopt` function returns a `Result` struct with three fields:
 (def options ["--amazing:"])
 (def result (getopt/getopt ["--amazing=man" "one" "two"] options))
 ;; result: {:args ["one" "two"], :options {:amazing "man"}, :errors []}
-``` [7](#1-6) 
+```
 
 #### Error Handling
 
@@ -100,7 +100,7 @@ The `getopt` function returns a `Result` struct with three fields:
 (def options ["-a"])
 (def result (getopt/getopt ["--unknown" "one" "two"] options))
 ;; result: {:args ["one" "two"], :options {}, :errors ["Unknown option: \"--unknown\""]}
-``` [8](#1-7) 
+```
 
 #### Stop Parsing with --
 
@@ -108,7 +108,7 @@ The `getopt` function returns a `Result` struct with three fields:
 (def options ["-a"])
 (def result (getopt/getopt ["--" "-a" "one" "two"] options))
 ;; result: {:args ["-a" "one" "two"], :options {}, :errors []}
-``` [9](#1-8) 
+```
 
 ## API Reference
 
