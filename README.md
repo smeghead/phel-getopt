@@ -136,37 +136,7 @@ This library assumes a normalized `argv` provided by Phel v0.28.0+ and focuses s
 
 
 
-## Composer Install
 
-```bash
-composer require smeghead/phel-getopt
-```
-
-## Usage
-
-```clojure
-(ns app\core
-  (:require smeghead\getopt\getopt))
-
-(def options ["-a"  # short option `a` without value.
-              "-p:" # short option `p` with value(required).
-              "--output:" # long option `output` with value(required).
-             ])
-(def result (getopt/getopt argv options))
-
-(println "*program*:" *program*)
-(println "argv:" argv)
-(println "options:" (result :options))
-(println "arguments:" (result :args))
-```
-
-```bash
-$ vendor/bin/phel run examples/example.phel -a --output ./output.txt one two
-*program*: src/phel/main.phel
-argv: [-a --output ./output.txt one two]
-options: {:a true, :output ./output.txt}
-arguments: [one two]
-```
 
 
 
