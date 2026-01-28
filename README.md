@@ -4,102 +4,127 @@ Natural and safe command-line argument parsing for phel CLI programs.
 
 ![Testing](https://github.com/smeghead/phel-getopt/actions/workflows/ci.yml/badge.svg?event=push) [![Latest Stable Version](https://img.shields.io/packagist/v/smeghead/phel-getopt.svg)](https://packagist.org/packages/smeghead/phel-getopt) [![Total Downloads](https://img.shields.io/packagist/dt/smeghead/phel-getopt.svg)](https://packagist.org/packages/smeghead/phel-getopt) [![License](https://img.shields.io/packagist/l/smeghead/phel-getopt.svg)](LICENSE)
 
-# phel-getopt
-
 A small and focused command-line option and argument parser for phel.
 
 ## Overview
 
-`phel-getopt` is a library for parsing command-line options and arguments
-in phel CLI programs.
+`phel-getopt` is a library for parsing command-line options and arguments in phel CLI programs. It provides clear, predictable, and phel-friendly command-line parsing with a simple and explicit API.
 
-Latest version(v0.28.0) of phel normalize `argv` so that the same arguments are
-available regardless of how a program is executed (file, namespace, or
-compiled PHP).
+## Installation
 
-With this improvement in phel itself, `phel-getopt` focuses solely on
-providing **clear, predictable, and phel-friendly command-line parsing**.
+```bash
+composer require smeghead/phel-getopt
+```
 
+## Usage
 
-## Why phel-getopt?
+### Basic Usage
 
-Even with normalized `argv`, parsing command-line options remains a
-non-trivial task.
+```clojure
+(ns app\core
+  (:require smeghead\getopt\getopt))
 
-PHP’s built-in `getopt()` has several characteristics that make it
-awkward to use from phel:
+(def options ["-a"         # short option `a` without value
+              "--output:"  # long option `output` with value(required)
+             ])
+(def result (getopt/getopt argv options))
 
-- It enforces PHP-specific conventions
-- It has unintuitive behavior for long options
-- It is tightly coupled to PHP’s global state
-- It does not feel natural in a Lisp-style language
+(println "options:" (result :options))
+(println "arguments:" (result :args))
+```
 
-`phel-getopt` exists to offer a simpler and more explicit alternative
-designed for phel programs.
+```bash
+$ vendor/bin/phel run examples/example.phel -a --output ./output.txt one two
+options: {:a true, :output ./output.txt}
+arguments: [one two]
+```
 
+### Option Definitions
 
-## What This Library Does
+Options are defined as strings with the following format:
 
-`phel-getopt` provides:
+| Format | Meaning | Example |
+|--------|---------|---------|
+| `"-x"` | Short option without value | `"-a"` |
+| `"-x:"` | Short option with required value | `"-o:"` |
+| `"--name"` | Long option without value | `"--verbose"` |
+| `"--name:"` | Long option with required value | `"--output:"` |
 
-- Parsing of short and long options
-- Separation of options and positional arguments
-- A clear and explicit data structure as the result
-- Behavior suitable for CLI tools written in phel
+The colon suffix (`:`) indicates that an option requires a value.
 
-It does **not** attempt to handle execution-method differences or `argv`
-normalization — those concerns are handled by phel itself.
+### Result Structure
 
+The `getopt` function returns a `Result` struct with three fields:
 
-## Design Goals
+- `:args` - Vector of positional arguments
+- `:options` - Map of option keywords to their values
+- `:errors` - Vector of error messages (empty if successful)
 
-- Simple and explicit parsing rules
-- No reliance on global state
-- Predictable behavior
-- Easy to reason about in phel code
-- Small surface area and minimal magic
+### Practical Examples
 
-The goal is not to replicate every feature of GNU `getopt`, but to provide
-a practical and understandable tool for everyday phel CLI programs.
+#### Multiple Arguments
 
+```clojure
+(def options [])
+(def result (getopt/getopt ["one" "two"] options))
+;; result: {:args ["one" "two"], :options {}, :errors []}
+``` [4](#1-3) 
 
-## When to Use phel-getopt
+#### Short Options with Values
 
-Use this library if you are:
+```clojure
+(def options ["-a:"])
+(def result (getopt/getopt ["-a" "param" "one" "two"] options))
+;; result: {:args ["one" "two"], :options {:a "param"}, :errors []}
+``` [5](#1-4) 
 
-- Writing CLI tools in phel
-- Looking for an alternative to PHP’s `getopt()`
-- Wanting explicit control over options and arguments
-- Preferring a small, focused dependency
+#### Combined Short Options
 
+```clojure
+(def options ["-a:"])
+(def result (getopt/getopt ["-aparam" "one" "two"] options))
+;; result: {:args ["one" "two"], :options {:a "param"}, :errors []}
+``` [6](#1-5) 
 
-## When Not to Use It
+#### Long Options with Values
 
-You may not need `phel-getopt` if:
+```clojure
+(def options ["--amazing:"])
+(def result (getopt/getopt ["--amazing=man" "one" "two"] options))
+;; result: {:args ["one" "two"], :options {:amazing "man"}, :errors []}
+``` [7](#1-6) 
 
-- Your program accepts no command-line options
-- You are comfortable using PHP’s `getopt()` directly
-- You need full GNU getopt compatibility
+#### Error Handling
 
+```clojure
+(def options ["-a"])
+(def result (getopt/getopt ["--unknown" "one" "two"] options))
+;; result: {:args ["one" "two"], :options {}, :errors ["Unknown option: \"--unknown\""]}
+``` [8](#1-7) 
 
-## Background
+#### Stop Parsing with --
 
-Earlier versions of this library also addressed differences in `argv`
-caused by various phel execution methods.
+```clojure
+(def options ["-a"])
+(def result (getopt/getopt ["--" "-a" "one" "two"] options))
+;; result: {:args ["-a" "one" "two"], :options {}, :errors []}
+``` [9](#1-8) 
 
-As of recent phel releases, `argv` is normalized by phel itself.
-This library has since narrowed its scope to option and argument parsing only.
+## API Reference
 
+### getopt/getopt
 
-## Summary
+```clojure
+(defn getopt [args options])
+```
 
-`phel-getopt` is a lightweight command-line parsing library for phel.
+- `args` - Vector of command-line arguments (normalized `argv`)
+- `options` - Vector of option definition strings
+- Returns - `Result` struct with `:args`, `:options`, and `:errors` fields
 
-It assumes a normalized `argv` and focuses on doing one thing well:
-turning command-line arguments into a clear and usable structure for
-phel CLI programs.
+## Notes
 
-
+This library assumes a normalized `argv` provided by Phel v0.28.0+ and focuses solely on option and argument parsing. For development setup instructions, see the original README history.
 
 
 
@@ -123,7 +148,8 @@ composer require smeghead/phel-getopt
 (ns app\core
   (:require smeghead\getopt\getopt))
 
-(def options ["-a" # short option `a` without value.
+(def options ["-a"  # short option `a` without value.
+              "-p:" # short option `p` with value(required).
               "--output:" # long option `output` with value(required).
              ])
 (def result (getopt/getopt argv options))
@@ -137,10 +163,12 @@ composer require smeghead/phel-getopt
 ```bash
 $ vendor/bin/phel run examples/example.phel -a --output ./output.txt one two
 *program*: src/phel/main.phel
-argv: [-a one two]
+argv: [-a --output ./output.txt one two]
 options: {:a true, :output ./output.txt}
 arguments: [one two]
 ```
+
+
 
 
 

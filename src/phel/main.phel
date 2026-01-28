@@ -1,7 +1,8 @@
 (ns smeghead\getopt\main
   (:require smeghead\getopt\getopt))
 
-(def options ["-a" # short option `a` without value.
+(def options ["-a"  # short option `a` without value.
+              "-p:" # short option `p` with value(required).
               "--output:" # long option `output` with value(required).
              ])
 (def result (getopt/getopt argv options))
